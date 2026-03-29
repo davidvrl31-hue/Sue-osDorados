@@ -1,6 +1,6 @@
-import { View, FlatList } from "react-native";
-import { useRouter } from "expo-router";
-import ProductCard from "../../../../components/shared/ProductCard";
+import { View, Text, Image } from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 
 const products = [
   {
@@ -34,25 +34,31 @@ const products = [
   },
 ];
 
-export default function Products() {
-  const router = useRouter();
+export default function ProductDetail() {
+  const { id } = useLocalSearchParams();
+  const [product, setProduct] = useState<any>(null);
+
+  useEffect(() => {
+    const found = products.find((p) => p.id === id);
+    setProduct(found);
+  }, [id]);
+
+  if (!product) return null;
 
   return (
-    <View className="flex-1 bg-gray-100 p-3">
-      <FlatList
-        data={products}
-        numColumns={2}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ProductCard
-            id={item.id}
-            name={item.name}
-            price={item.price}
-            image={item.image}
-            onPress={() => router.push(`/products/${item.id}`)}
-          />
-        )}
+    <View className="flex-1 bg-white p-4">
+      <Image
+        source={{ uri: product.image }}
+        className="w-full h-64 rounded-xl"
       />
+
+      <Text className="text-2xl font-bold mt-4">
+        {product.name}
+      </Text>
+
+      <Text className="text-purple-600 text-xl mt-2">
+        ${product.price}
+      </Text>
     </View>
   );
 }
